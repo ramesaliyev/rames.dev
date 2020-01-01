@@ -1,0 +1,9 @@
+name = "rames_dev"
+type = "webpack"
+account_id = "f6eb193c5ada002251ec96253583e74d"
+workers_dev = false
+route = "rames.dev/*"
+zone_id = "1934bb41a5bcc56151e71d00ff30c7db"
+
+[site]
+bucket = "./static"

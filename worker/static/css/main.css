@@ -128,15 +128,23 @@ section {
   font-size: 0.9rem;
 }
 
-.hello-text {
+.text {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   padding: 0;
+}
+
+.text.row {
+  flex-direction: row;
+  align-items: center;
+}
+
+.text p {
+  flex: 1;
 }
 
 .hello-text p {
   font-size: 1.2rem;
-  flex: 1;
 }
 
 .hello-text .avatar {
@@ -148,12 +156,29 @@ section {
   margin-right: 20px;
 }
 
+.text.about-text {
+  align-items: flex-start;
+}
+
+.about-text .avatar {
+  background-image: url('https://rames.dev/img/common/avatar.jpeg');
+  background-size: contain;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin-left: 20px;
+}
+
 @media(max-width: 600px) {
-  .hello-text {
+  .text {
     flex-direction: column;
   }
 
   .hello-text .avatar {
     margin: 0 0 20px 0;
+  }
+
+  .about-text .avatar {
+    margin: 20px 0 0 0;
   }
 }

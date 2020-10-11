@@ -2,6 +2,7 @@
   border: none;
   margin: 0;
   padding: 0;
+  outline: none;
   box-sizing: border-box;
 }
 
@@ -128,6 +129,10 @@ section {
   font-size: 0.9rem;
 }
 
+section.half-margin {
+  margin-bottom: 20px;
+}
+
 .text {
   display: flex;
   flex-direction: column;
@@ -183,4 +188,14 @@ section {
   .about-text .avatar {
     margin: 20px 0 0 0;
   }
+}
+
+textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 20px;
+  font-size: 1rem;
+  border: 2px solid #000;
+  border-radius: 4px;
+  resize: none;
 }

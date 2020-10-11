@@ -5,62 +5,90 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   font-family: 'Space Mono', monospace;
   font-weight: 400;
   font-size: 20px;
   background-color: #fff;
+  color: #000;
+  min-width: 320px;
 
+  -webkit-font-smoothing: subpixel-antialiased;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;
-  font-size-adjust: 100%;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
   color: #1A1423;
   font-weight: 600;
   letter-spacing: -.025rem;
+  margin-bottom: 10px;
 }
 
 h1 {
-  font-size: 36px;
+  font-size: 1.8rem;
 }
 
 h2 {
-  font-size: 28px;
+  font-size: 1.4rem;
 }
 
 h3 {
-  font-size: 26px;
+  font-size: 1.3rem;
 }
 
 h4 {
-  font-size: 16px;
+  font-size: 1.2rem;
 }
 
-a, a:visited {
+h5 {
+  font-size: 1rem;
+}
+
+h6 {
+  font-size: 0.8rem;
+}
+
+a.naked {
+  border: none;
+}
+
+a,
+a:visited {
   cursor: pointer;
   color: #000;
   text-decoration: none;
-}
-
-a:hover,
-a:focus {
   border-bottom: 2px solid #000;
 }
 
-.logo span {
-  color: #829191;
+a.active,
+a:hover,
+a:focus {
+  color: #268bd2;
+  border-color: #268bd2;
 }
 
-.sublogo {
-  font-size: 18px;
+ul {
+  list-style: none;
 }
 
-p {
-  color: #000;
-  font-size: 20px;
+li {
+  margin-bottom: 15px;
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+li .date {
+  position: relative;
+  margin-top: 5px;
+  float: left;
+  padding-right: 10px;
+  color: #666;
+  font-family: monospace;
+  font-size: 0.8rem;
 }
 
 .wrapper {
@@ -69,60 +97,35 @@ p {
   margin: 0 auto;
 }
 
-@media(max-width: 800px) {
+@media(max-width: 950px) {
   .wrapper {
     width: 100%
   }
-}
-
-header {
-  padding-bottom: 20px;
-  font-family: 'Ubuntu Mono', monospace;
 }
 
 nav {
   padding: 40px 0;
   font-family: 'Ubuntu Mono', monospace;
   font-weight: 400;
+  font-size: 0.9rem;
+}
+
+nav a,
+nav a:visited {
   color: #333;
-  font-size: 18px;
+  border: none;
 }
 
-main {
-
-}
-
-footer {
-
+nav a.active,
+nav a:hover,
+nav a:focus {
+  color: #000;
+  border-bottom: 2px solid #000;
 }
 
 section {
-  padding: 20px 0;
-}
-
-.block {
-  padding: 15px 0;
-}
-
-.block-title {
-  padding-bottom: 5px;
-  color: #4C2A85;
-}
-
-.block-subtitle {
-  color: #829191;
-}
-
-.link-list {
-  list-style-type: none;
-}
-
-.link-list li {
-  padding-bottom: 10px;
-}
-
-.link-list li:last-child {
-  padding-bottom: 0px;
+  margin-bottom: 40px;
+  font-size: 0.9rem;
 }
 
 .hello-text {
@@ -132,7 +135,7 @@ section {
 }
 
 .hello-text p {
-  font-size: 24px;
+  font-size: 1.2rem;
   flex: 1;
 }
 

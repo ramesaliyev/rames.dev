@@ -4,16 +4,16 @@
         <!-- Meta -->
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>link extractor | utils.rames</title>
-        <meta name="description" content="Link Extractor by Rameş Aliyev.">
+        <title>serve | rames.dev</title>
+        <meta name="description" content="Serve by Rameş Aliyev.">
         <meta name="keywords" content="rameş, aliyev, rames.dev, ramesaliyev">
         <meta name="author" content="Rameş Aliyev">
         <link rel="icon" type="image/png" href="https://rames.dev/img/common/favicon.png" />
 
         <!-- OG -->
-        <meta property="og:title" content="link extractor | utils.rames" />
+        <meta property="og:title" content="serve | rames.dev" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://utils.rames.dev/link-extractor" />
+        <meta property="og:url" content="https://serve.rames.dev" />
         <meta property="og:image" content="https://rames.dev/img/common/avatar.jpeg" />
 
         <!-- Assets -->
@@ -24,28 +24,21 @@
         <div class="wrapper">
             <nav>
                 <a class="active" href="https://rames.dev">go home</a>
-                / <a class="active" href="/">all utils</a>
+                / <a class="active" href="https://utils.rames.dev">all utils</a>
             </nav>
             <main>
                 <section class="text row hello-text half-margin">
-                    <p>Paste your text into textarea below.</p>
+                    <p>Paste your link into textarea below to get serve url.</p>
                 </section>
                 <section>
                     <textarea id="text-input"></textarea>
                 </section>
-                <section id="output-canvas" style="visibility: hidden">
-                    <h4></h4>
-                    <ul></ul>
-                </section>
+                <section id="output-canvas"></section>
             </main>
         </div>
         <script>
-            const URLRegex = /(https?:\/\/[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
-
             const textInput = document.getElementById('text-input');
             const outputCanvas = document.getElementById('output-canvas');
-            const outputTitle = outputCanvas.querySelector('h4');
-            const outputList = outputCanvas.querySelector('ul');
 
             function cutString(string, maxLength) {
                 if (string.length <= maxLength) {
@@ -58,26 +51,20 @@
             }
 
             function onInput() {
-                const {value} = textInput;
+                const value = textInput.value.trim();
 
-                if (!value.length) {
-                    outputCanvas.style.visibility = 'hidden';
+                if (!value) {
+                    outputCanvas.innerHTML = '';
                     return;
                 }
 
-                const matches = value.match(URLRegex);
+                const url = location.href + encodeURIComponent(value);
 
-                outputList.innerHTML = '';
-                outputCanvas.style.visibility = 'visible';
-                outputTitle.innerText = `${matches ? matches.length : 'no'} links found`;
-
-                if (matches) {
-                    outputList.innerHTML = matches.map(match => `
-                        <li><span class="date">▷ </span><a rel="nofollow" target="_blank" href="${match}">
-                            ${cutString(match, 70)}
-                        </a></li>
-                    `).join('');
-                }
+                outputCanvas.innerHTML = `
+                    <span class="date">▷ </span><a rel="nofollow" target="_blank" href="${url}">
+                        ${cutString(url, 70)}
+                    </a>
+                `.trim();
             }
 
             textInput.addEventListener('input', onInput);

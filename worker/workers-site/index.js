@@ -1,4 +1,5 @@
 import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
+import serveApp from './serve';
 
 /**
  * The DEBUG flag will do two things that help during development:
@@ -10,6 +11,12 @@ import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
 const DEBUG = false
 
 addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  if (url.hostname === 'serve.rames.dev' && url.pathname !== '/') {
+    return serveApp(event);
+  }
+
   try {
     event.respondWith(handleEvent(event))
   } catch (e) {
@@ -98,6 +105,8 @@ function handlePrefix(prefix) {
     if (reqURL.hostname === 'utils.rames.dev') {
       // strip the prefix from the path for lookup
       url.pathname = '_apps/utils/' + url.pathname;
+    } else if (reqURL.hostname === 'serve.rames.dev') {
+      url.pathname = '_apps/serve/' + url.pathname;
     } else {
       url.pathname = '_apps/www/' + url.pathname;
     }

@@ -73,7 +73,7 @@
 
                 if (matches) {
                     outputList.innerHTML = matches.map(match => `
-                        <li><span class="date">▷ </span><a rel="nofollow" target="_blank" href="${match}">
+                        <li><span class="date">▷ </span><a rel="nofollow" target="_blank" class="break-all" href="${match}">
                             ${cutString(match, 70)}
                         </a></li>
                     `).join('');

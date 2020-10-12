@@ -92,6 +92,10 @@ li .date {
   font-size: 0.8rem;
 }
 
+.break-all {
+  word-break: break-all;
+}
+
 .wrapper {
   width: 950px;
   padding: 0px 20px;

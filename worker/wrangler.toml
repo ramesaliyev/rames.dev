@@ -1,9 +1,13 @@
 name = "rames_dev"
 type = "webpack"
-account_id = "f6eb193c5ada002251ec96253583e74d"
 workers_dev = false
-route = "rames.dev/*"
+account_id = "f6eb193c5ada002251ec96253583e74d"
 zone_id = "1934bb41a5bcc56151e71d00ff30c7db"
+routes = [
+  "rames.dev/*",
+  "utils.rames.dev/*",
+  "serve.rames.dev/*"
+]
 
 [site]
 bucket = "./static"

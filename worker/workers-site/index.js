@@ -1,4 +1,4 @@
-import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
+import {getAssetFromKV, mapRequestToAsset} from '@cloudflare/kv-asset-handler'
 import serveApp from './serve';
 
 /**
@@ -27,7 +27,8 @@ addEventListener('fetch', event => {
         }),
       )
     }
-    event.respondWith(new Response('Internal Error', { status: 500 }))
+
+    event.respondWith(new Response('Internal Error', {status: 500}))
   }
 })
 
@@ -51,15 +52,17 @@ async function handleEvent(event) {
 
     const page = await getAssetFromKV(event, options)
 
-    let defaultAssetKey = mapRequestToAsset(event.request);
-    console.log({
-      __STATIC_CONTENT,
-      __STATIC_CONTENT_MANIFEST: JSON.parse(__STATIC_CONTENT_MANIFEST),
-      defaultAssetKey,
-      cache: caches.default,
-      event, options, page
-    });
-
+    if (DEBUG) {
+      let defaultAssetKey = mapRequestToAsset(event.request);
+      console.log({
+        __STATIC_CONTENT,
+        __STATIC_CONTENT_MANIFEST: JSON.parse(__STATIC_CONTENT_MANIFEST),
+        defaultAssetKey,
+        cache: caches.default,
+        event, options, page
+      });
+    }
+    
     // allow headers to be altered
     const response = new Response(page.body, page)
 
@@ -102,8 +105,8 @@ function handlePrefix(prefix) {
 
     let reqURL = new URL(request.url);
     console.log(reqURL.hostname);
+
     if (reqURL.hostname === 'utils.rames.dev') {
-      // strip the prefix from the path for lookup
       url.pathname = '_apps/utils/' + url.pathname;
     } else if (reqURL.hostname === 'serve.rames.dev') {
       url.pathname = '_apps/serve/' + url.pathname;

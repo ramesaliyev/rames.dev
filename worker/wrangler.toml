@@ -1,3 +1,4 @@
+compatibility_date = "2022-04-05"
 name = "rames_dev"
 type = "webpack"
 workers_dev = false

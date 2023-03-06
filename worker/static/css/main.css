@@ -14,6 +14,7 @@ body {
   background-color: #fff;
   color: #000;
   min-width: 320px;
+  letter-spacing: 0.001px;
 
   -webkit-font-smoothing: subpixel-antialiased;
   -webkit-text-size-adjust: 100%;
@@ -203,4 +204,18 @@ textarea {
   border-radius: 4px;
   resize: none;
   font-family: 'Space Mono', monospace;
+}
+
+/**/
+
+@media screen {
+  .print-title {
+    display: none;
+  }
+}
+
+@media print {  
+  nav {
+    display: none;
+  }
 }

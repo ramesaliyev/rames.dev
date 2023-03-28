@@ -179,6 +179,10 @@ section.half-margin {
   margin-left: 20px;
 }
 
+.about-links {
+  margin-bottom: 5px;
+}
+
 @media(max-width: 600px) {
   .text,
   .text.row {

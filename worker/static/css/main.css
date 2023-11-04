@@ -210,16 +210,24 @@ textarea {
   font-family: 'Space Mono', monospace;
 }
 
+.print-title, 
+.print-website {
+  display: none;
+}
+
 /**/
 
 @media screen {
-  .print-title {
-    display: none;
-  }
 }
 
 @media print {  
   nav {
     display: none;
+  }
+  .print-title {
+    display: block;
+  }
+  .print-website {
+    display: block;
   }
 }

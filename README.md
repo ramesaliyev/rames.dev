@@ -10,5 +10,5 @@
     // Start development server.
     $ wrangler dev
 
-    // Publish
-    $ wrangler publish
+    // Deploy
+    $ wrangler deploy

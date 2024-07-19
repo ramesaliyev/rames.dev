@@ -1,14 +1,22 @@
 compatibility_date = "2022-04-05"
-name = "rames_dev"
-type = "webpack"
+name = "ramesdev"
 workers_dev = false
 account_id = "f6eb193c5ada002251ec96253583e74d"
-zone_id = "1934bb41a5bcc56151e71d00ff30c7db"
 routes = [
   "rames.dev/*",
+  "hello.rames.dev/*",
   "utils.rames.dev/*",
   "serve.rames.dev/*"
 ]
 
 [site]
 bucket = "./static"
+
+[[kv_namespaces]]
+binding = "KV_DATA"
+id = "eca7dea9758d4f2a97ba727c048b53f0"
+
+[vars]
+ENV_JWKS_CACHE_USE = true
+ENV_JWKS_CACHE_KEY = "JWKS_CACHE"
+ENV_JWKS_CACHE_TTL = 604800 # a week: 7 * 24 * 60 * 60

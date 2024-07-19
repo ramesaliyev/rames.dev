@@ -1,4 +1,5 @@
 import {getAssetFromKV, mapRequestToAsset} from '@cloudflare/kv-asset-handler'
+import serveHello from './hello';
 import serveApp from './serve';
 
 /**
@@ -12,6 +13,10 @@ const DEBUG = false
 
 addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+
+  if (url.hostname === 'hello.rames.dev') {
+    return serveHello(event);
+  }
 
   if (url.hostname === 'serve.rames.dev' && url.pathname !== '/') {
     return serveApp(event);

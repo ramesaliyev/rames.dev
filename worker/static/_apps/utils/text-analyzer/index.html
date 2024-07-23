@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>text analyzer | utils.rames</title>
+    <meta name="description" content="Text Analyzer by Rameş Aliyev.">
+    <meta name="keywords" content="rameş, aliyev, rames.dev, ramesaliyev">
+    <meta name="author" content="Rameş Aliyev">
+    <link rel="icon" type="image/png" href="https://rames.dev/img/common/favicon.png" />
+
+    <!-- OG -->
+    <meta property="og:title" content="text analyzer | utils.rames" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://utils.rames.dev/text-analyzer" />
+    <meta property="og:image" content="https://rames.dev/img/common/avatar.jpeg" />
+
+    <!-- Assets -->
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://rames.dev/css/main.css">
+
+    <style>
+      .text-analyzer-input {
+        margin-bottom: 0;
+      }
+
+      #output-canvas div {
+        margin-bottom: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <nav>
+          <a class="active" href="https://rames.dev">go home</a>
+          / <a class="active" href="/">all utils</a>
+      </nav>
+      <main>
+        <section class="text row hello-text half-margin">
+          <p>Paste your text into textarea below.</p>
+        </section>
+        <section class="text-analyzer-input">
+          <textarea id="text-input"></textarea>
+        </section>
+        <section id="output-canvas" style="visibility: hidden">
+          <div></div>
+          <h4></h4>
+          <ul></ul>
+        </section>
+      </main>
+    </div>
+    <script>
+      const URLRegex = /(https?:\/\/[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})/gi;
+
+      const textInput = document.getElementById('text-input');
+      const outputCanvas = document.getElementById('output-canvas');
+      const outputTitle = outputCanvas.querySelector('h4');
+      const outputList = outputCanvas.querySelector('ul');
+      const outputDetails = outputCanvas.querySelector('div');
+
+      function cutString(string, maxLength) {
+        if (string.length <= maxLength) {
+          return string;
+        }
+        const maxHalfLength = (maxLength - 3) / 2;
+        return `${string.substr(0, maxHalfLength)}...${string.substr(-maxHalfLength)}`;
+      }
+
+      function onInput() {
+        const {value} = textInput;
+
+        if (!value.length) {
+          outputCanvas.style.visibility = 'hidden';
+          return;
+        }
+
+        /**
+         * Word count
+         */
+        const words = value.split(/\s+/).filter(Boolean);
+        const chars = value.length;
+
+        outputDetails.innerText = `${words.length} words, ${chars} characters`;
+
+        /**
+         * Link extraction
+         */ 
+        const matches = value.match(URLRegex);
+
+        outputList.innerHTML = '';
+        outputCanvas.style.visibility = 'visible';
+        outputTitle.innerText = `${matches ? matches.length : 'no'} links found`;
+
+        if (matches) {
+          outputList.innerHTML = matches.map(match => `
+            <li><span class="date">▷ </span><a rel="nofollow" target="_blank" class="break-all" href="${match}">
+              ${cutString(match, 70)}
+            </a></li>
+          `).join('');
+        }
+      }
+
+      textInput.addEventListener('input', onInput);
+    </script>
+  </body>
+</html>

@@ -138,16 +138,15 @@ async function path_same(event) {
     memory.id = Math.random().toString(36).substring(2);
   }
 
-  const count = ++memory.access.count;
-
   const access = {
     ip: event.request.headers.get('cf-connecting-ip'),
     ray: event.request.headers.get('cf-ray'),
     time: new Date().toISOString(),
   }
 
-  const values = {
-    count,
+  const output = {
+    id: memory.id,
+    count: ++memory.access.count,
     access: objectToHTMLList(access),
     last_access: objectToHTMLList(memory.access.last),
   }
@@ -156,7 +155,7 @@ async function path_same(event) {
 
   return HTMLResponse("Same?", `
     <h1>Are we hitting the same worker?</h1>
-    ${objectToHTMLList(values)}
+    ${objectToHTMLList(output)}
   `);
 }
 

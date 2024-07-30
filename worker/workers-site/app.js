@@ -27,6 +27,18 @@ function HTMLResponse(title, body, headers = {}) {
   });
 }
 
+function objectToHTMLList(obj) {
+  if (!obj) {
+    return '';
+  }
+
+  const list = Object.entries(obj)
+    .map(([key, value]) => `<li><strong>${key}</strong>: ${value}</li>`)
+    .join('');
+
+  return `<ul>${list}</ul>`;
+}
+
 /**
  * Path Handlers: Protected 
  */
@@ -112,11 +124,49 @@ async function path_protected(event) {
 }
 
 /**
+ * Same?
+ */
+const memory = {
+  id: null,
+  access: {
+    count: 0,
+    last: null,
+  },
+};
+async function path_same(event) {
+  if (memory.id === null) {
+    memory.id = Math.random().toString(36).substring(2);
+  }
+
+  const count = ++memory.access.count;
+
+  const access = {
+    ip: event.request.headers.get('cf-connecting-ip'),
+    ray: event.request.headers.get('cf-ray'),
+    time: new Date().toISOString(),
+  }
+
+  const values = {
+    count,
+    access: objectToHTMLList(access),
+    last_access: objectToHTMLList(memory.access.last),
+  }
+
+  memory.access.last = access;
+
+  return HTMLResponse("Same?", `
+    <h1>Are we hitting the same worker?</h1>
+    ${objectToHTMLList(values)}
+  `);
+}
+
+/**
  * Path Handlers Index and Basic Path Handlers 
  */
 const path_handlers = {
   "/": path_home,
   "/protected": path_protected,
+  "/same": path_same,
 }
 
 async function path_404() {
@@ -124,7 +174,15 @@ async function path_404() {
 }
 
 async function path_home() {
-  return new Response('Hello there 😎');
+  const paths = {
+    '<a href="/protected">/protected</a>': "Protected Lands",
+    '<a href="/same">/same</a>': "Same?",
+  };
+
+  return HTMLResponse("Protected Lands", `
+    <h1>Hello there 😎</h1>
+    ${objectToHTMLList(paths)}
+  `);
 }
 
 /**

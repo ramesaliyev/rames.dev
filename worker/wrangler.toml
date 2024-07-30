@@ -4,7 +4,7 @@ workers_dev = false
 account_id = "f6eb193c5ada002251ec96253583e74d"
 routes = [
   "rames.dev/*",
-  "hello.rames.dev/*",
+  "app.rames.dev/*",
   "utils.rames.dev/*",
   "serve.rames.dev/*"
 ]

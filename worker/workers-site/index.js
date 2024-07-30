@@ -1,6 +1,6 @@
 import {getAssetFromKV, mapRequestToAsset} from '@cloudflare/kv-asset-handler'
-import serveHello from './hello';
-import serveApp from './serve';
+import serveApp from './app';
+import serveServe from './serve';
 
 /**
  * The DEBUG flag will do two things that help during development:
@@ -14,12 +14,12 @@ const DEBUG = false
 addEventListener('fetch', event => {
   const url = new URL(event.request.url);
 
-  if (url.hostname === 'hello.rames.dev') {
-    return serveHello(event);
+  if (url.hostname === 'app.rames.dev') {
+    return serveApp(event);
   }
 
   if (url.hostname === 'serve.rames.dev' && url.pathname !== '/') {
-    return serveApp(event);
+    return serveServe(event);
   }
 
   try {

@@ -1,16 +1,20 @@
-compatibility_date = "2022-04-05"
+compatibility_date = "2025-01-01"
 name = "ramesdev"
+main = "backend/index.js"
 workers_dev = false
 account_id = "f6eb193c5ada002251ec96253583e74d"
+
 routes = [
-  "rames.dev/*",
-  "app.rames.dev/*",
-  "utils.rames.dev/*",
-  "serve.rames.dev/*"
+  { pattern = "rames.dev/*", zone_name = "rames.dev" },
+  { pattern = "demo.rames.dev/*", zone_name = "rames.dev" },
+  { pattern = "utils.rames.dev/*", zone_name = "rames.dev" },
+  { pattern = "serve.rames.dev/*", zone_name = "rames.dev" },
+  { pattern = "clip.rames.dev/*", zone_name = "rames.dev" },
 ]
 
-[site]
-bucket = "./static"
+[assets]
+directory = "./frontend"
+binding = "ASSETS"
 
 [[kv_namespaces]]
 binding = "KV_DATA"

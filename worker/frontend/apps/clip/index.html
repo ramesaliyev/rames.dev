@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Collapsible List Frontend (Mocked)</title>
+<style>
+  :root {
+    --w: 900px;
+    --bg: #ffffff;
+    --text: #000000;
+    --border: #000000;
+    --danger-bg: #ff4d4d;
+  }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui; font-size: 18px; }
+  .app { width: min(100%, var(--w)); margin: 200px auto 80px; display: flex; flex-direction: column; gap: 16px; padding: 0 16px; }
+  .toolbar { display: flex; gap: 12px; justify-content: flex-end; }
+  button { appearance: none; background: #fff; color: var(--text); padding: 12px 16px; border: 3px solid var(--border); cursor: pointer; font-weight: 800; }
+  .list { display: flex; flex-direction: column; gap: 12px; }
+  .entry { border: 3px solid var(--border); background: #fff; overflow: hidden; }
+  .strip { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 16px; border: none; border-bottom: 3px solid var(--border); cursor: pointer; font-weight: 700; text-align: left; }
+  .chev { width: 14px; height: 14px; transform: rotate(-90deg); transition: transform .2s ease; }
+  .strip[aria-expanded="true"] .chev { transform: rotate(0deg); }
+  .title { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .idbadge { font-size: 14px; border: 3px solid var(--border); padding: 2px 6px; font-weight: 800; }
+  .content { max-height: 0; overflow: hidden; transition: max-height .25s ease; background: #fff; }
+  .inner { padding: 16px; display: grid; gap: 12px; }
+  .fulltext { margin: 0; padding: 12px; border: 3px solid var(--border); font-family: monospace; font-size: 18px; white-space: pre-wrap; }
+  .row { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
+  .deleteBtn.confirm { background: var(--danger-bg); color: #fff; }
+  .composer { display: grid; gap: 10px; }
+  textarea { width: 100%; min-height: 160px; padding: 12px; border: 3px solid var(--border); background: #fff; color: var(--text); font-size: 18px; }
+  .empty { text-align: center; border: 3px dashed var(--border); padding: 18px; font-weight: 700; }
+  .toast { position: fixed; right: 20px; bottom: 20px; background: #fff; border: 3px solid var(--border); padding: 10px 12px; max-width: 420px; display: none; font-size: 16px; box-shadow: 8px 8px 0 #000; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="toolbar">
+    <button id="clearBtn">Clear</button>
+  </div>
+  <div id="list" class="list"></div>
+  <div class="composer">
+    <textarea id="input" placeholder="Type something..."></textarea>
+    <button id="postBtn">Post</button>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const PATHS = { list: '/list', create: '/create', clear: '/clear', del: id => `/delete/${encodeURIComponent(id)}` };
+async function httpJSON(url, options = {}) { const r = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...options }); if (!r.ok) throw new Error(await r.text()||r.statusText); const ct=r.headers.get('content-type')||''; return ct.includes('application/json')?r.json():null; }
+const API = { list: () => httpJSON(PATHS.list), create: t => httpJSON(PATHS.create,{method:'POST',body:JSON.stringify({text:t})}), clear: () => httpJSON(PATHS.clear,{method:'POST'}), delete: id => httpJSON(PATHS.del(id),{method:'DELETE'}) };
+const USE_MOCK = true; const realFetch = window.fetch.bind(window); const LS_KEY='mockEntries', LS_SEQ='mockSeq';
+const getEntries=()=>JSON.parse(localStorage.getItem(LS_KEY)||'[]'); const setEntries=a=>localStorage.setItem(LS_KEY,JSON.stringify(a)); const nextId=()=>{const n=Number(localStorage.getItem(LS_SEQ)||'0')+1; localStorage.setItem(LS_SEQ,String(n)); return n;};
+function jsonResponse(d,s=200){return new Response(d!=null?JSON.stringify(d):null,{status:s,headers:{'Content-Type':'application/json'}})}
+async function mockFetch(input,init={}){const url=typeof input==='string'?input:input.url; const m=(init.method||'GET').toUpperCase(); await new Promise(r=>setTimeout(r,200)); if(url.endsWith(PATHS.list)&&m==='GET') return jsonResponse(getEntries()); if(url.endsWith(PATHS.create)&&m==='POST'){const b=init.body?JSON.parse(init.body):{}; if(!b.text||!String(b.text).trim()) return jsonResponse({error:'text required'},400); const arr=getEntries(); arr.push({id:nextId(),text:String(b.text)}); setEntries(arr); return jsonResponse({ok:true});} if(url.endsWith(PATHS.clear)&&(m==='POST'||m==='DELETE')){setEntries([]);localStorage.setItem(LS_SEQ,'0');return jsonResponse({ok:true});} const delPrefix=PATHS.del(''); if(url.startsWith(delPrefix)&&(m==='DELETE'||m==='POST')){const id=Number(url.substring(delPrefix.length)); const before=getEntries(); const after=before.filter(e=>e.id!==id); setEntries(after); return jsonResponse({ok:true});} return realFetch(input,init);}
+if(USE_MOCK) window.fetch=(i,init)=>mockFetch(i,init);
+const listEl=document.getElementById('list'), toastEl=document.getElementById('toast');
+function toast(m,ms=3000){toastEl.textContent=m; toastEl.style.display='block'; clearTimeout(toastEl._t); toastEl._t=setTimeout(()=>toastEl.style.display='none',ms);}
+let entries=[];
+function render(){listEl.innerHTML=''; if(!entries.length){listEl.innerHTML='<div class="empty">No entries yet.</div>'; return;} entries.forEach(e=>{const item=document.createElement('div'); item.className='entry'; const strip=document.createElement('button'); strip.className='strip'; strip.setAttribute('aria-expanded','false'); strip.innerHTML=`<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg><span class="title" title="${escapeHtml(e.text)}">${escapeHtml(e.text)}</span><span class="idbadge">#${e.id}</span>`; const content=document.createElement('div'); content.className='content'; content.innerHTML=`<div class="inner"><pre class="fulltext">${escapeHtml(e.text)}</pre><div class="row"><button class="copyBtn">Copy</button><button class="deleteBtn">Delete</button></div></div>`; strip.addEventListener('click',()=>toggle(content,strip));
+content.querySelector('.copyBtn').addEventListener('click',ev=>{ev.stopPropagation(); navigator.clipboard.writeText(e.text).then(()=>toast('Copied to clipboard')).catch(err=>toast('Copy failed: '+err));});
+const delBtn=content.querySelector('.deleteBtn'); let confirmDelete=false; delBtn.addEventListener('click',async ev=>{ev.stopPropagation(); if(!confirmDelete){confirmDelete=true; delBtn.classList.add('confirm'); toast('Click again to delete'); return;} try{await API.delete(e.id); await refresh();}catch(err){toast('Delete failed: '+err.message);} });
+item.appendChild(strip); item.appendChild(content); listEl.appendChild(item);});}
+function toggle(c,s){const o=s.getAttribute('aria-expanded')==='true'; if(o){s.setAttribute('aria-expanded','false'); const h=c.scrollHeight; c.style.maxHeight=h+'px'; requestAnimationFrame(()=>c.style.maxHeight='0px');} else {s.setAttribute('aria-expanded','true'); c.style.maxHeight=c.scrollHeight+'px'; const onEnd=e=>{if(e.target===c){c.style.maxHeight='none'; c.removeEventListener('transitionend',onEnd);}}; c.addEventListener('transitionend',onEnd);}}
+function escapeHtml(str){return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+async function refresh(){try{entries=await API.list(); render();}catch(err){toast('Load failed: '+err.message);}}
+async function onPost(){const ta=document.getElementById('input'); const t=ta.value.trim(); if(!t) return; const btn=document.getElementById('postBtn'); btn.disabled=true; try{await API.create(t); ta.value=''; await refresh();}catch(err){toast('Post failed: '+err.message);}finally{btn.disabled=false; ta.focus();}}
+async function onClear(){if(!confirm('Clear all entries?')) return; try{await API.clear(); await refresh();}catch(err){toast('Clear failed: '+err.message);}}
+document.getElementById('postBtn').addEventListener('click',onPost); document.getElementById('clearBtn').addEventListener('click',onClear); document.getElementById('input').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')onPost();});
+refresh();
+</script>
+</body>
+</html>

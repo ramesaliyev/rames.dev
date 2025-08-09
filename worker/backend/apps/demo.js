@@ -42,58 +42,51 @@ function objectToHTMLList(obj) {
 /**
  * Path Handlers: Protected 
  */
+async function path_protected(req, env) {
 
-async function validate_jwt(jwt, jwks_cache) {
-  const {jwtVerify, createRemoteJWKSet, experimental_jwksCache} = require('jose');
+  async function validate_jwt(jwt, jwks_cache) {
+    const {jwtVerify, createRemoteJWKSet, experimental_jwksCache} = require('jose');
 
-  // Using experimental cache feature.
-  // https://github.com/panva/jose/blob/v5.6.3/src/jwks/remote.ts#L32
-  let remote_options = {
-    [experimental_jwksCache]: jwks_cache || {}, 
-  };
+    // Using experimental cache feature.
+    // https://github.com/panva/jose/blob/v5.6.3/src/jwks/remote.ts#L32
+    let remote_options = {
+      [experimental_jwksCache]: jwks_cache || {}, 
+    };
 
-  const JWKS_URL = `${ENV_HELLO_TEAM_DOMAIN}/cdn-cgi/access/certs`;
-  const JWKS = createRemoteJWKSet(new URL(JWKS_URL), remote_options);
+    const JWKS_URL = `${env.ENV_HELLO_TEAM_DOMAIN}/cdn-cgi/access/certs`;
+    const JWKS = createRemoteJWKSet(new URL(JWKS_URL), remote_options);
 
-  return await jwtVerify(jwt, JWKS, {
-    issuer: ENV_HELLO_TEAM_DOMAIN,
-    audience: ENV_HELLO_POLICY_AUD,
-  });
-}
-
-async function get_jwks_cache() {
-  return KV_DATA.get(ENV_JWKS_CACHE_KEY, {type: 'json', cacheTtl: ENV_JWKS_CACHE_TTL});
-}
-
-async function set_jwks_cache(jwks_data) {
-  return KV_DATA.put(ENV_JWKS_CACHE_KEY, JSON.stringify(jwks_data));
-}
-
-async function verify_jwt(jwt, use_cache=true) {
-  if (!use_cache) {
-    return validate_jwt(jwt);
+    return jwtVerify(jwt, JWKS, {
+      issuer: env.ENV_HELLO_TEAM_DOMAIN,
+      audience: env.ENV_HELLO_POLICY_AUD,
+    });
   }
 
-  // Get cached JWKS data.
-  const jwks_cache = await get_jwks_cache() || {};
-  const uat = jwks_cache.uat ?? 0;
+  async function verify_jwt(jwt, use_cache=true) {
+    if (!use_cache) {
+      return validate_jwt(jwt);
+    }
 
-  // Validate the JWT.
-  const jwt_result = await validate_jwt(jwt, jwks_cache);
-    
-  // If the JWKS data has changed, update the cache.
-  if (uat !== jwks_cache?.uat) {
-    await set_jwks_cache(jwks_cache);
+    // Get cached JWKS data.
+    const jwks_cache = await env.KV_DATA.get(
+      env.ENV_JWKS_CACHE_KEY, {type: 'json', cacheTtl: env.ENV_JWKS_CACHE_TTL}
+    ) || {};
+    const uat = jwks_cache.uat ?? 0;
+
+    // Validate the JWT.
+    const jwt_result = await validate_jwt(jwt, jwks_cache);
+      
+    // If the JWKS data has changed, update the cache.
+    if (uat !== jwks_cache?.uat) {
+      await env.KV_DATA.put(env.ENV_JWKS_CACHE_KEY, JSON.stringify(jwks_cache));
+    }
+
+    return {
+      uat: [uat, jwks_cache.uat],
+      jwt_result,
+    };
   }
 
-  return {
-    uat: [uat, jwks_cache.uat],
-    jwt_result,
-  };
-}
-
-async function path_protected(event) {
-  const req = event.request;
   const headers = Object.fromEntries(req.headers.entries());
 
   const token_key = 'cf-access-jwt-assertion';
@@ -106,7 +99,7 @@ async function path_protected(event) {
 
   let jwt_status;
   try {
-    const result = await verify_jwt(token, ENV_JWKS_CACHE_USE);
+    const result = await verify_jwt(token, env.ENV_JWKS_CACHE_USE);
     jwt_status = `<strong style="color:green">JWT Valid</strong>`;
     jwt_status += `<pre>${JSON.stringify(result, null, 2)}</pre>`;
   } catch (err) {
@@ -133,14 +126,14 @@ const memory = {
     last: null,
   },
 };
-async function path_same(event) {
+async function path_same(request) {
   if (memory.id === null) {
     memory.id = Math.random().toString(36).substring(2);
   }
 
   const access = {
-    ip: event.request.headers.get('cf-connecting-ip'),
-    ray: event.request.headers.get('cf-ray'),
+    ip: request.headers.get('cf-connecting-ip'),
+    ray: request.headers.get('cf-ray'),
     time: new Date().toISOString(),
   }
 
@@ -187,8 +180,7 @@ async function path_home() {
 /**
  * Main Event Handler 
  */
-export default event => {
-  const req = event.request;
+export default (req, env, ctx) => {
   const url = new URL(req.url);
 
   let path_handler = path_404
@@ -197,5 +189,5 @@ export default event => {
     path_handler = path_handlers[url.pathname];
   }
 
-  event.respondWith(path_handler(event));
+  return path_handler(req, env);
 }

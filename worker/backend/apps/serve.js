@@ -1,9 +1,9 @@
-export default event => {
-  if (event.request.method === 'OPTIONS') {
-    return event.respondWith(handleCors(event.request))
+export default (req, env, ctx) => {
+  if (req.method === 'OPTIONS') {
+    return handleCors(req)
   }
 
-  event.respondWith(handleRequest(event.request));
+  return handleRequest(req);
 }
 
 /**

@@ -22,6 +22,12 @@
     <!-- <link rel="stylesheet" href="/css/main.css"> -->
 
     <style>
+      :root {
+        --yellow: #fff8c9;
+        --red: #ffb3b3;
+        --green: #e2ffd9;
+      }
+
       ul, li {
         border: none;
         margin: 0;
@@ -50,6 +56,9 @@
             user-select: none;
             display: flex;
             align-items: center;
+            font-weight: 800;
+            background-color: #eaeaea;
+            color: #333;
           }
 
           input {
@@ -58,16 +67,35 @@
         }
       }
 
+      .separator {
+        border-top: 2px dashed #ccc;
+        margin: 20px auto;
+        width: 99%;
+      }
+
+      .status-box {
+        text-align: center;
+        border: 2px dashed #000;
+        padding: 18px;
+        font-weight: 700;
+        border-radius: 4px;
+      }
+
+      .danger-button:hover,
+      .safe-button:hover {
+        color: #000;
+      }
+
+      .danger-button:hover {
+        background-color: var(--red);
+      }
+
+      .safe-button:hover {
+        background-color: var(--yellow);
+      }
+
       .entries-wrapper {
         margin: 20px 0;
-
-        #no-entries {
-          text-align: center;
-          border: 2px dashed #000;
-          padding: 18px;
-          font-weight: 700;
-          border-radius: 4px;
-        }
       }
 
       #entries {
@@ -157,6 +185,21 @@
           color: #888;
           cursor: not-allowed;
         }
+
+        .save-status {
+          margin-bottom: 20px;
+          text-align: center;
+          overflow-wrap: break-word;
+
+          strong {
+            background-color: var(--yellow);
+            display: inline-block;
+            padding: 0 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-weight: 800;
+          }
+        }
       }
     </style>
   </head>
@@ -170,14 +213,15 @@
         <ul class="session-controls">
           <li class="slug">
             <div>Slug</div>
-            <input type="text" id="slug"></input>
+            <input id="slug" type="text" placeholder="is the access key for this vault..." autofocus />
           </li>
           <li>
-            <button id="purge">Purge</button>
+            <button id="purge" class="danger-button">Purge</button>
           </li>
         </ul>
+        <div class="separator"></div>
         <div class="entries-wrapper">
-          <div id="no-entries">No entries yet.</div>
+          <div id="no-entries" class="status-box">No entries yet.</div>
           <ul id="entries">
             <li class="entry-item expanded">
               <div class="entry-header">
@@ -192,22 +236,28 @@
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                 </div>
                 <div class="entry-footer">
-                  <button>Delete</button>
-                  <button>Copy</button>
+                  <button class="delete danger-button">Delete</button>
+                  <button class="copy safe-button">Copy</button>
                 </div>
               </div>
             </li>
           </ul>
         </div>
+        <div class="separator"></div>
         <div class="save-form">
-          <textarea id="save-input" placeholder="Type something..." disabled></textarea>
-          <button id="save" disabled>Save</button>
+          <textarea id="save-input" placeholder="Type something..."></textarea>
+          <button id="save" class="safe-button">Save</button>
+          <div class="save-status status-box">
+            Saved with randomly generated slug <strong>aAE21</strong>. Access via <a href="https://clip.rames.dev/aAE21" target="_blank">https://clip.rames.dev/aAE21</a> or by manually entering the slug in the top input field.
+          </div>
         </div>
       </main>
     </div>
 
     <script>
-      
+      document.getElementById("slug").addEventListener("input", function () {
+        this.value = this.value.replace(/[^a-z0-9]/gi, '');
+      });
     </script>
 </body>
 </html>

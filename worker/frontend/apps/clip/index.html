@@ -270,17 +270,42 @@
         <ul class="session-controls">
           <li class="slug">
             <div>Slug</div>
-            <input id="slug" type="text" placeholder="is the access key for this vault..." autofocus />
+            <input id="slugInput" type="text" placeholder="is the access key for this vault..." autofocus />
           </li>
           <li>
-            <button id="purge" class="danger-button">Purge</button>
+            <button id="purgeButton" class="danger-button">Purge</button>
           </li>
         </ul>
         <div class="separator"></div>
         <div class="entries-wrapper">
-          <div id="no-entries" class="status-box bg-diaglines angle-45">No entries yet.</div>
-          <ul id="entries">
-            <li class="entry-item expanded">
+          <div id="noEntryLabel" class="status-box bg-diaglines angle-45">No entries yet.</div>
+          <ul id="entryList">
+            <li class="entry-item" data-id="1">
+              <div class="entry-header bg-diaglines">
+                <div class="entry-summary">
+                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </div>
+                <div class="entry-id">#1</div>
+              </div>
+              <div class="entry-body">
+                <div class="entry-content">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  falanlar
+                  filanlar
+                  olur oyleler
+                  kanka
+                    automatically
+                      vay
+                        aq
+                </div>
+                <div class="entry-footer">
+                  <button class="delete danger-button">Delete</button>
+                  <button class="copy safe-button">Copy</button>
+                </div>
+              </div>
+            </li>
+            <li class="entry-item" data-id="2">
               <div class="entry-header bg-diaglines">
                 <div class="entry-summary">
                   <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
@@ -310,10 +335,10 @@
         <div class="separator"></div>
         <div class="save-form-wrapper">
           <div class="save-form">
-            <textarea id="save-input" placeholder="Type something..." rows="1"></textarea>
-            <button id="save" class="safe-button">Save</button>
+            <textarea id="saveInput" placeholder="Type something..." rows="1"></textarea>
+            <button id="saveButton" class="safe-button">Save</button>
           </div>
-          <div class="save-status status-box bg-diaglines angle-45">
+          <div id="saveStatusLabel" class="save-status status-box bg-diaglines angle-45">
             Saved with randomly generated slug <strong>aAE21</strong>. Access via <a href="https://clip.rames.dev/aAE21" target="_blank">https://clip.rames.dev/aAE21</a> or by manually entering the slug in the top input field.
           </div>
         </div>
@@ -324,14 +349,208 @@
     </div>
 
     <script>
-      document.getElementById("slug").addEventListener("input", function () {
-        this.value = this.value.replace(/[^a-z0-9]/gi, '');
-      });
+      /**
+       * UI Class
+       * Handles all UI interactions and element references.
+       */
+      class UI {
+        static EVENTS = {
+          SLUG_INPUT: Symbol(),
+          SAVE: Symbol(),
+          PURGE: Symbol(),
+          ENTRY_COPY: Symbol(),
+          ENTRY_DELETE: Symbol(),
+        }
 
-      const ta = document.getElementById('save-input');
-      ta.addEventListener('input', () => {
-        ta.style.height = 'auto'; // reset so shrink works
-        ta.style.height = ta.scrollHeight + 10 + 'px';
+        #el = {
+          entryList: '#entryList',
+          noEntryLabel: '#noEntryLabel',
+          saveInput: '#saveInput',
+          saveButton: '#saveButton',
+          slugInput: '#slugInput',
+          purgeButton: '#purgeButton',
+          saveStatusLabel: '#saveStatusLabel'
+        };
+
+        #eventListeners = [];
+
+        constructor() {
+          // Collect all elements
+          Object.keys(this.#el).forEach(key => {
+            this.#el[key] = document.querySelector(this.#el[key]);
+          });
+
+          /**
+           * Event Listeners
+           * Bind all event listeners to the UI elements.
+           */
+          this.#el.saveButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.SAVE));
+          this.#el.purgeButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.PURGE));
+
+          this.#el.slugInput.addEventListener('input', () => {
+            this.#el.slugInput.value = this.#el.slugInput.value.replace(/[^a-z0-9]/gi, '');
+            this.#emitEvent(UI.EVENTS.SLUG_INPUT, this.#el.slugInput.value);
+          });
+
+          this.#el.saveInput.addEventListener('input', function() {
+            this.style.height = 'auto'; // reset so shrink works
+            this.style.height = this.scrollHeight + 10 + 'px';  
+          });
+
+          this.#el.entryList.addEventListener('click', (event) => {
+            const entryItem = event.target.closest('.entry-item');
+            if (!entryItem) return; // click wasn't inside an entry item
+
+            const id = entryItem.dataset.id; // <li data-id="...">
+
+            if (event.target.closest('.entry-header')) {
+              return entryItem.classList.toggle('expanded');
+            }
+
+            if (event.target.closest('.delete')) {
+              return this.#emitEvent(UI.EVENTS.ENTRY_DELETE, id);
+            }
+
+            if (event.target.closest('.copy')) {
+              return this.#emitEvent(UI.EVENTS.ENTRY_COPY, id);
+            }
+          });
+        }
+
+        #emitEvent(name, ...args) {
+          this.#eventListeners.forEach(listener => {
+            listener(name, ...args);
+          });
+        }
+
+        addListener(callback) {
+          this.#eventListeners.push(callback);
+        }
+      }
+
+      /**
+       * StateMachine
+       * A simple state machine to manage application states and transitions.
+       */
+      class StateMachine {
+        #handlers = null;
+        #current = null;
+        #context = null;
+
+        constructor(context, current, handlers) {
+          this.#handlers = handlers;
+          this.#current = current;
+          this.#context = context;
+
+          this.send = this.send.bind(this);
+        }
+
+        async init() {
+          await this.#enterState(this.#current);
+        }
+
+        async #exitState () {
+          await this.#handlers[this.#current]?.onExit?.(this.#context);
+        }
+
+        async #enterState(nextState) {
+          this.#current = nextState;
+          nextState = await this.#handlers[this.#current]?.onEnter?.(this.#context);
+          if (nextState && nextState !== this.#current) {
+            await this.#transition(nextState);
+          }
+        }
+
+        async #transition(nextState) {
+          await this.#exitState();
+          await this.#enterState(nextState);
+        }
+
+        async send(event, args) {
+          const handler = this.#handlers[this.#current]?.onEvent?.[event];
+          const nextState = await handler?.(this.#context, args);
+
+          if (nextState && nextState !== this.#current) {
+            await this.#transition(nextState);
+          }
+        }
+      }
+      
+      /**
+       * App Class
+       * Main application logic and state management.
+       */
+      const STATES = {
+        INIT: Symbol(),
+        IDLE: Symbol(),
+        SAVING: Symbol(),
+      };
+      
+      class App {
+        #ui = null;
+        #sm = null;
+        #ctx = null;
+
+        constructor() {
+          this.#ui = new UI();
+          this.#ctx = {
+            ui: this.#ui
+          };
+
+          this.#sm = new StateMachine(this.#ctx, STATES.INIT, this);
+          this.#ui.addListener(this.#sm.send);
+          this.#sm.init();
+        }
+
+        [STATES.INIT] = {
+          onEnter: async ctx => {
+            console.log('Initializing app...');
+            return STATES.IDLE;
+          },
+        };
+
+        [STATES.IDLE] = {
+          onEnter: (ctx) => {
+            console.log('App is now idle');
+          },
+          onEvent: {
+            [UI.EVENTS.SLUG_INPUT]: (ctx, [slug]) => {
+              console.log('Slug input changed:', slug);
+              // Handle slug input logic
+            },
+            [UI.EVENTS.SAVE]: () => {
+              console.log('Save button clicked');
+              return STATES.SAVING;
+            },
+            [UI.EVENTS.PURGE]: () => {
+              console.log('Purge button clicked');
+              // Handle purge logic
+            },
+            [UI.EVENTS.ENTRY_COPY]: (ctx, [id]) => {
+              console.log('Entry copy requested for ID:', id);
+              // Handle entry copy logic
+            },
+            [UI.EVENTS.ENTRY_DELETE]: (ctx, [id]) => {
+              console.log('Entry delete requested for ID:', id);
+              // Handle entry delete logic
+            }
+          }
+        };
+
+        [STATES.SAVING] = {
+          onEnter: async (ctx) => {
+            console.log('Saving entry...');
+            // Simulate saving logic
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            console.log('Entry saved successfully');
+            return STATES.IDLE;
+          }
+        };
+      }
+
+      // Initialize the application
+      document.addEventListener('DOMContentLoaded', () => {
+        new App();
       });
     </script>
 </body>

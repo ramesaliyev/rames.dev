@@ -18,8 +18,8 @@
 
     <!-- Assets -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://rames.dev/css/main.css">
-    <!-- <link rel="stylesheet" href="/css/main.css"> -->
+    <!-- <link rel="stylesheet" href="https://rames.dev/css/main.css"> -->
+    <link rel="stylesheet" href="/css/main.css">
 
     <style>
       :root {
@@ -34,6 +34,12 @@
         padding: 0;
         outline: none;
         box-sizing: border-box;
+      }
+
+      textarea, input {
+        &:focus {
+          background-color: var(--yellow);
+        }
       }
 
       .session-controls {
@@ -86,12 +92,31 @@
         color: #000;
       }
 
-      .danger-button:hover {
-        background-color: var(--red);
+      .danger-button {
+        &:hover,
+        &:focus {
+          background-color: var(--red);
+        }
       }
 
-      .safe-button:hover {
-        background-color: var(--yellow);
+      .safe-button {
+        &:hover,
+        &:focus {
+          background-color: var(--yellow);
+        }
+      }
+
+      .bg-diaglines {
+        --angle: -45deg;
+        background: repeating-linear-gradient(
+          var(--angle),                   /* diagonal angle */
+          #eaeaea,                /* first color */
+          #eaeaea 1px,            /* thickness of first stripe */
+          white 1px,              /* gap starts */
+          white 5px               /* thickness of second stripe + gap */
+        );
+
+        &.angle-45 { --angle: 45deg; }
       }
 
       .entries-wrapper {
@@ -100,6 +125,10 @@
 
       #entries {
         margin: 20px 0;
+      }
+
+      #no-entries {
+        user-select: none;
       }
 
       .entry-item {
@@ -114,6 +143,7 @@
         cursor: pointer;
         padding: 10px;
         border-bottom-width: 4px;
+        user-select: none;
       }
 
       .entry-summary {
@@ -152,6 +182,7 @@
         border-bottom: 2px dashed;
         padding-bottom: 15px;
         font-size: 0.8rem;
+        white-space: pre-wrap;
       }
 
       .entry-footer {
@@ -174,10 +205,15 @@
         }
       }
 
-      .save-form {
+      .save-form-wrapper {
         display: flex;
         flex-direction: column;
         gap: 15px;
+        margin-bottom: 20px;
+
+        textarea {
+          min-height: auto;
+        }
 
         textarea:disabled,
         button:disabled {
@@ -186,8 +222,22 @@
           cursor: not-allowed;
         }
 
+        .save-form {
+          display: flex;
+          flex-direction: column;
+
+          textarea {
+            border-radius: 4px 4px 0px 0px;
+            height: 80px;
+          }
+
+          button {
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+          }
+        }
+
         .save-status {
-          margin-bottom: 20px;
           text-align: center;
           overflow-wrap: break-word;
 
@@ -200,6 +250,13 @@
             font-weight: 800;
           }
         }
+      }
+
+      .footnote {
+        font-size: 0.7rem;
+        text-align: center;
+        color: #333;
+        margin: 20px auto;
       }
     </style>
   </head>
@@ -221,10 +278,10 @@
         </ul>
         <div class="separator"></div>
         <div class="entries-wrapper">
-          <div id="no-entries" class="status-box">No entries yet.</div>
+          <div id="no-entries" class="status-box bg-diaglines angle-45">No entries yet.</div>
           <ul id="entries">
             <li class="entry-item expanded">
-              <div class="entry-header">
+              <div class="entry-header bg-diaglines">
                 <div class="entry-summary">
                   <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -234,6 +291,13 @@
               <div class="entry-body">
                 <div class="entry-content">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                  falanlar
+                  filanlar
+                  olur oyleler
+                  kanka
+                    automatically
+                      vay
+                        aq
                 </div>
                 <div class="entry-footer">
                   <button class="delete danger-button">Delete</button>
@@ -244,12 +308,17 @@
           </ul>
         </div>
         <div class="separator"></div>
-        <div class="save-form">
-          <textarea id="save-input" placeholder="Type something..."></textarea>
-          <button id="save" class="safe-button">Save</button>
-          <div class="save-status status-box">
+        <div class="save-form-wrapper">
+          <div class="save-form">
+            <textarea id="save-input" placeholder="Type something..." rows="1"></textarea>
+            <button id="save" class="safe-button">Save</button>
+          </div>
+          <div class="save-status status-box bg-diaglines angle-45">
             Saved with randomly generated slug <strong>aAE21</strong>. Access via <a href="https://clip.rames.dev/aAE21" target="_blank">https://clip.rames.dev/aAE21</a> or by manually entering the slug in the top input field.
           </div>
+        </div>
+        <div class="footnote">
+          All vaults are automatically purged 24 hours after their last access. This vault is scheduled for auto-purge at <strong>23:48 10.12.2023</strong>. You can also purge it manually by clicking the "Purge" button above.
         </div>
       </main>
     </div>
@@ -257,6 +326,12 @@
     <script>
       document.getElementById("slug").addEventListener("input", function () {
         this.value = this.value.replace(/[^a-z0-9]/gi, '');
+      });
+
+      const ta = document.getElementById('save-input');
+      ta.addEventListener('input', () => {
+        ta.style.height = 'auto'; // reset so shrink works
+        ta.style.height = ta.scrollHeight + 10 + 'px';
       });
     </script>
 </body>

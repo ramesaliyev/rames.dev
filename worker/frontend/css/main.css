@@ -225,6 +225,7 @@ input {
 button {
   width: auto;
   appearance: none;
+  user-select: none;
   cursor: pointer;
   font-weight: 800;
   padding: 0 5px;

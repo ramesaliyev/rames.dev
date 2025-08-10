@@ -33,34 +33,41 @@
       .session-controls {
         display: flex;
         justify-content: space-between;
-      }
+        gap: 10px;
 
-      .session-controls li {
-        display: flex;
-      }
+        li {
+          display: flex;
+        }
 
-      .session-controls .slug div {
-        border: 2px solid #000;
-        border-right: none;
-        border-radius: 4px 0px 0px 4px;
-        padding: 5px;
-        user-select: none;
-      }
-      
-      .session-controls .slug input {
-        border-radius: 0px 4px 4px 0px;
+        .slug {
+          flex: 1;
+
+          div {
+            border: 2px solid #000;
+            border-right: none;
+            border-radius: 4px 0px 0px 4px;
+            padding: 5px;
+            user-select: none;
+            display: flex;
+            align-items: center;
+          }
+
+          input {
+            border-radius: 0px 4px 4px 0px;
+          }
+        }
       }
 
       .entries-wrapper {
         margin: 20px 0;
-      }
 
-      .entries-wrapper #no-entries {
-        text-align: center;
-        border: 2px dashed #000;
-        padding: 18px;
-        font-weight: 700;
-        border-radius: 4px;
+        #no-entries {
+          text-align: center;
+          border: 2px dashed #000;
+          padding: 18px;
+          font-weight: 700;
+          border-radius: 4px;
+        }
       }
 
       #entries {
@@ -85,6 +92,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        width: 90%;
       }
 
       .chev {
@@ -165,7 +173,7 @@
             <input type="text" id="slug"></input>
           </li>
           <li>
-            <button id="reset">Reset Session</button>
+            <button id="purge">Purge</button>
           </li>
         </ul>
         <div class="entries-wrapper">

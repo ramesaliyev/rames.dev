@@ -199,15 +199,39 @@ section.half-margin {
   }
 }
 
+/* input type text */
+button,
+input,
 textarea {
   width: 100%;
-  min-height: 200px;
-  padding: 20px;
   font-size: 1rem;
   border: 2px solid #000;
   border-radius: 4px;
   resize: none;
   font-family: 'Space Mono', monospace;
+  background: #fff;
+}
+
+textarea {
+  min-height: 200px;
+  padding: 20px;
+}
+
+input {
+  padding: 0 5px;
+}
+
+button {
+  width: auto;
+  appearance: none;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0 5px;
+}
+
+button:hover {
+  background-color: #000;
+  color: #fff;
 }
 
 .print-title, 

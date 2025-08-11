@@ -602,18 +602,19 @@
         }
 
         renderEntryItem(entry) {
-          const content = Utils.escapeHTML(entry.content);
+          const entryContent = Utils.escapeHTML(entry.content);
+          const entryId = Number.isInteger(entry.id) ? entry.id : 0;
           const entryItem = `
-            <li class="entry-item" data-id="${entry.id}">
+            <li class="entry-item" data-id="${entryId}">
               <div class="entry-header bg-diaglines">
                 <div class="entry-summary">
                   <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  ${content.substring(0, 100)}
+                  ${entryContent.substring(0, 100)}
                 </div>
-                <div class="entry-id">#${entry.id}</div>
+                <div class="entry-id">#${entryId}</div>
               </div>
               <div class="entry-body">
-                <div class="entry-content">${content}</div>
+                <div class="entry-content">${entryContent}</div>
                 <div class="entry-footer">
                   <button class="delete danger-button">Delete</button>
                   <button class="copy safe-button">Copy</button>

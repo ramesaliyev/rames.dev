@@ -44,7 +44,7 @@ async function serve(req, env, ctx) {
   const hostname = url.hostname;
   
   let appName = hostname.replace(DOMAIN, '').replace('.', '');
-  appName = appName && APP_HANDLERS[appName] ? appName : 'clip';
+  appName = appName && APP_HANDLERS[appName] ? appName : 'www';
   
   // Get the handler for the matched app
   const appHandler = APP_HANDLERS[appName];

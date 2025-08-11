@@ -18,7 +18,6 @@
 
     <!-- Assets -->
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
-    <!-- <link rel="stylesheet" href="https://rames.dev/css/main.css"> -->
     <link rel="stylesheet" href="/css/main.css">
 
     <style>
@@ -26,6 +25,7 @@
         --yellow: #fff8c9;
         --red: #ffb3b3;
         --green: #e2ffd9;
+        --blue: #cceeff;
       }
 
       ul, li {
@@ -40,6 +40,10 @@
         &:focus {
           background-color: var(--yellow);
         }
+      }
+
+      .hidden {
+        display: none;
       }
 
       .session-controls {
@@ -85,6 +89,11 @@
         padding: 18px;
         font-weight: 700;
         border-radius: 4px;
+
+        &.error {
+          border-color: var(--red);
+          color: red;
+        }
       }
 
       .danger-button:hover,
@@ -93,16 +102,36 @@
       }
 
       .danger-button {
-        &:hover,
-        &:focus {
+        &:hover {
           background-color: var(--red);
+        }
+        &:focus {
+          outline: 2px solid var(--red);
         }
       }
 
       .safe-button {
-        &:hover,
+        &:hover {
+          background-color: var(--blue);
+        }
         &:focus {
-          background-color: var(--yellow);
+          outline: 2px solid var(--blue);
+        }
+      }
+
+      .success-button {
+        &, &:hover, &:focus {
+          background-color: var(--green);
+        }
+      }
+
+      input:disabled,
+      textarea:disabled,
+      button:disabled {
+        &, &:hover, &:focus {
+          background-color: #f0f0f0;
+          color: #888;
+          cursor: not-allowed;
         }
       }
 
@@ -215,13 +244,6 @@
           min-height: auto;
         }
 
-        textarea:disabled,
-        button:disabled {
-          background-color: #f0f0f0;
-          color: #888;
-          cursor: not-allowed;
-        }
-
         .save-form {
           display: flex;
           flex-direction: column;
@@ -229,10 +251,10 @@
           textarea {
             border-radius: 4px 4px 0px 0px;
             height: 80px;
+            border-bottom: none;
           }
 
           button {
-            border-top: none;
             border-radius: 0 0 4px 4px;
           }
         }
@@ -270,8 +292,7 @@
         <ul class="session-controls">
           <li class="slug">
             <div>Slug</div>
-            <input id="slugInput" type="text" placeholder="is the access key for this vault..." autofocus inputmode="latin" autocomplete="off" autocorrect="off"
-       autocapitalize="none" spellcheck="false" />
+            <input id="slugInput" type="text" placeholder="is the access key for this vault..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
           </li>
           <li>
             <button id="purgeButton" class="danger-button">Purge</button>
@@ -279,59 +300,8 @@
         </ul>
         <div class="separator"></div>
         <div class="entries-wrapper">
-          <div id="noEntryLabel" class="status-box bg-diaglines angle-45">No entries yet.</div>
-          <ul id="entryList">
-            <li class="entry-item" data-id="1">
-              <div class="entry-header bg-diaglines">
-                <div class="entry-summary">
-                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </div>
-                <div class="entry-id">#1</div>
-              </div>
-              <div class="entry-body">
-                <div class="entry-content">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  falanlar
-                  filanlar
-                  olur oyleler
-                  kanka
-                    automatically
-                      vay
-                        aq
-                </div>
-                <div class="entry-footer">
-                  <button class="delete danger-button">Delete</button>
-                  <button class="copy safe-button">Copy</button>
-                </div>
-              </div>
-            </li>
-            <li class="entry-item" data-id="2">
-              <div class="entry-header bg-diaglines">
-                <div class="entry-summary">
-                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                </div>
-                <div class="entry-id">#2</div>
-              </div>
-              <div class="entry-body">
-                <div class="entry-content">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                  falanlar
-                  filanlar
-                  olur oyleler
-                  kanka
-                    automatically
-                      vay
-                        aq
-                </div>
-                <div class="entry-footer">
-                  <button class="delete danger-button">Delete</button>
-                  <button class="copy safe-button">Copy</button>
-                </div>
-              </div>
-            </li>
-          </ul>
+          <div id="entryStatus" class="status-box bg-diaglines angle-45">Loading...</div>
+          <ul id="entryList" class="hidden"></ul>
         </div>
         <div class="separator"></div>
         <div class="save-form-wrapper">
@@ -339,17 +309,48 @@
             <textarea id="saveInput" placeholder="Type something..." rows="1"></textarea>
             <button id="saveButton" class="safe-button">Save</button>
           </div>
-          <div id="saveStatusLabel" class="save-status status-box bg-diaglines angle-45">
-            Saved with randomly generated slug <strong>aAE21</strong>. Access via <a href="https://clip.rames.dev/aAE21" target="_blank">https://clip.rames.dev/aAE21</a> or by typing the slug into the input field at the top.
-          </div>
+          <div id="saveStatusLabel" class="save-status status-box bg-diaglines angle-45 hidden"></div>
         </div>
-        <div class="footnote">
+        <div id="footnote" class="footnote hidden">
           All vaults are automatically purged 24 hours after their last access. This vault is scheduled for auto-purge at <strong>10.12.2023 23:48</strong>. You can also purge it manually by clicking the "Purge" button above.
         </div>
       </main>
     </div>
 
     <script type="module">
+      /**
+       * Utils Class
+       * Contains utility functions for the application.
+       */
+      class Utils {
+        static debounce(fn, delay = 250) {
+          let t = null;
+          let ac = null;
+          let lastArgs = null;
+          let lastThis = null;
+
+          return function (...args) {
+            lastArgs = args; 
+            lastThis = this;
+
+            // If there's already a scheduled call, cancel it.
+            if (t) clearTimeout(t);
+
+            // If the previous run was async and still running, cancel it.
+            if (ac) ac.abort();
+
+            // Create a new AbortController for the *upcoming* run
+            ac = new AbortController();
+
+            // Schedule the call after 'delay' ms
+            t = setTimeout(() => {
+              t = null;
+              fn.apply(lastThis, [...lastArgs, ac.signal]);
+            }, delay);
+          };
+        };
+      }
+
       /**
        * UI Class
        * Handles all UI interactions and element references.
@@ -365,15 +366,24 @@
 
         #el = {
           entryList: '#entryList',
-          noEntryLabel: '#noEntryLabel',
+          entryStatus: '#entryStatus',
           saveInput: '#saveInput',
           saveButton: '#saveButton',
           slugInput: '#slugInput',
           purgeButton: '#purgeButton',
-          saveStatusLabel: '#saveStatusLabel'
+          saveStatusLabel: '#saveStatusLabel',
+          footnote: '#footnote',
+        };
+
+        #selectors = {
+          entryItem: '.entry-item',
+          entryHeader: '.entry-header',
+          entryDeleteButton: 'button.delete',
+          entryCopyButton: 'button.copy'
         };
 
         #eventListeners = [];
+        #timeouts = {};
 
         constructor() {
           // Collect all elements
@@ -385,17 +395,18 @@
            * Event Listeners
            * Bind all event listeners to the UI elements.
            */
-          this.#el.saveButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.SAVE));
           this.#el.purgeButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.PURGE));
+          this.#el.saveButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.SAVE));
 
+          const slugInputEmit = Utils.debounce(this.#emitEvent.bind(this), 500);
           this.#el.slugInput.addEventListener('input', () => {
             const $input = this.#el.slugInput;
             const start = $input.selectionStart;
             const length = $input.value.length;
-            $input.value = $input.value.replace(/[^a-z0-9]/gi, '');
+            $input.value = Model.getValidSlug($input.value);
             const caretPos = $input.value.length == length ? start : start - 1;
             $input.setSelectionRange(caretPos, caretPos); // keep caret stable
-            this.#emitEvent(UI.EVENTS.SLUG_INPUT, {slug: $input.value});
+            slugInputEmit(UI.EVENTS.SLUG_INPUT, {slug: $input.value});
           });
 
           this.#el.saveInput.addEventListener('input', function() {
@@ -404,20 +415,20 @@
           });
 
           this.#el.entryList.addEventListener('click', (event) => {
-            const entryItem = event.target.closest('.entry-item');
+            const entryItem = event.target.closest(this.#selectors.entryItem);
             if (!entryItem) return; // click wasn't inside an entry item
 
-            const id = entryItem.dataset.id; // <li data-id="...">
+            const id = +entryItem.dataset.id; // <li data-id="...">
 
-            if (event.target.closest('.delete')) {
+            if (event.target.closest(this.#selectors.entryDeleteButton)) {
               return this.#emitEvent(UI.EVENTS.ENTRY_DELETE, {id});
             }
 
-            if (event.target.closest('.copy')) {
+            if (event.target.closest(this.#selectors.entryCopyButton)) {
               return this.#emitEvent(UI.EVENTS.ENTRY_COPY, {id});
             }
 
-            if (event.target.closest('.entry-header')) {
+            if (event.target.closest(this.#selectors.entryHeader)) {
               return entryItem.classList.toggle('expanded');
             }
           });
@@ -431,6 +442,204 @@
 
         addListener(callback) {
           this.#eventListeners.push(callback);
+        }
+
+        #scheduleTimeout(key, delay, callback) {
+          if (this.#timeouts[key]) {
+            clearTimeout(this.#timeouts[key]);
+          }
+          this.#timeouts[key] = setTimeout(() => {
+            callback();
+            delete this.#timeouts[key];
+          }, delay);
+        }
+
+        #setButtonSuccess(selector, text, delay = 2000) {
+          const button = document.querySelector(selector);
+          
+          if (!button) return;
+          const originalText = button.textContent;
+
+          button.classList.add('success-button');
+          button.textContent = text;
+
+          this.#scheduleTimeout(`buttonSuccessTimeout-${selector}`, delay, () => {
+            button.classList.remove('success-button');
+            button.textContent = originalText;
+          });
+        }
+
+        #setButtonInProgress(buttonOrSelector, text) {
+          const button = typeof buttonOrSelector === 'string'
+            ? document.querySelector(buttonOrSelector)
+            : buttonOrSelector;
+
+          if (!button) return;
+          const originalText = button.textContent;
+
+          button.disabled = true;
+          button.textContent = text;
+
+          return () => {
+            button.disabled = false;
+            button.textContent = originalText;
+          };
+        }
+
+        #getAllInputElements() {
+          return [
+            this.#el.saveInput,
+            this.#el.slugInput,
+            this.#el.purgeButton,
+            this.#el.saveButton,
+            ...this.#el.entryList.querySelectorAll(`${this.#selectors.entryDeleteButton}, ${this.#selectors.entryCopyButton}`)
+          ];
+        }
+
+        setInProgress(inProgress) {
+          this.#getAllInputElements().forEach(input => {
+            input.disabled = inProgress;
+          });  
+        }
+
+        getEntryItemSelector(id) {
+          return `${this.#selectors.entryItem}[data-id="${id}"]`;
+        }
+
+        setCopyButtonSuccess(id) {
+          this.#setButtonSuccess(
+            `${this.getEntryItemSelector(id)} ${this.#selectors.entryCopyButton}`,
+            'Copied!',
+            2000
+          );
+        }
+
+        setDeleteButtonInProgress(id) {
+          return this.#setButtonInProgress(
+            `${this.getEntryItemSelector(id)} ${this.#selectors.entryDeleteButton}`,
+            'Deleting...'
+          );
+        }
+
+        setSaveButtonInProgress() {
+          return this.#setButtonInProgress(
+            this.#el.saveButton,
+            'Saving...'
+          );
+        }
+
+        setPurgeButtonInProgress() {
+          return this.#setButtonInProgress(
+            this.#el.purgeButton,
+            'Purging...'
+          );
+        }
+
+        clearSaveInput() {
+          this.#el.saveInput.value = '';
+          this.#el.saveInput.style.height = 'auto'; // reset height
+        }
+
+        getSaveInputValue() {
+          return this.#el.saveInput.value.trim();
+        }
+
+        showEl(el) {
+          el.classList.remove('hidden');
+        }
+
+        hideEl(el) {
+          el.classList.add('hidden');
+        }
+
+        renderSlug(slug) {
+          this.#el.slugInput.value = slug;
+        }
+
+        focusSlugInput() {
+          this.#el.slugInput.focus();
+        }
+
+        showEntryStatus(text, error = false) {
+          this.#el.entryStatus.classList[error ? 'add' : 'remove']('error');
+          this.#el.entryStatus.textContent = text;
+          this.showEl(this.#el.entryStatus);
+        }
+
+        hideEntryStatus() {
+          this.hideEl(this.#el.entryStatus);
+        }
+
+        renderEntryItem(entry) {
+          const entryItem = `
+            <li class="entry-item" data-id="${entry.id}">
+              <div class="entry-header bg-diaglines">
+                <div class="entry-summary">
+                  <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  ${entry.content.substring(0, 100)}
+                </div>
+                <div class="entry-id">#${entry.id}</div>
+              </div>
+              <div class="entry-body">
+                <div class="entry-content">${entry.content}</div>
+                <div class="entry-footer">
+                  <button class="delete danger-button">Delete</button>
+                  <button class="copy safe-button">Copy</button>
+                </div>
+              </div>
+            </li>`;
+          
+          this.#el.entryList.insertAdjacentHTML('beforeend', entryItem);
+          this.showEl(this.#el.entryList);
+          this.hideEntryStatus();
+        }
+
+        hideEntries() {
+          this.hideEl(this.#el.entryList);
+          this.hideEl(this.#el.saveStatusLabel);
+          this.hideEl(this.#el.footnote);
+          this.showEntryStatus('No entries yet.');
+        }
+
+        showEntries(entries) {
+          this.#el.entryList.innerHTML = '';
+
+          if (!entries || entries.length === 0) {
+            return this.hideEntries();
+          }
+
+          entries.forEach(entry => this.renderEntryItem(entry));
+        }
+
+        removeEntryItem(id) {
+          const entryItem = this.#el.entryList.querySelector(this.getEntryItemSelector(id));
+          if (entryItem) entryItem.remove();
+        }
+
+        showSaveStatus(error, slug, random) {
+          this.#el.saveStatusLabel.classList[error ? 'add' : 'remove']('error');
+          this.#el.saveStatusLabel.innerHTML = error ?
+            `Failed to save entry. Please try again. (Reason: ${error})` :
+            `${random ? `Entry saved to vault with randomly generated slug` : `Entry saved to vault with slug`}
+              <strong>${slug}</strong>. Access via 
+              <a href="https://clip.rames.dev/${slug}" target="_blank">https://clip.rames.dev/${slug}</a>
+              or by typing the slug into the input field at the top.
+            `;
+          this.#el.saveStatusLabel.classList.remove('hidden');
+        }
+
+        hideSaveStatus() {
+          this.hideEl(this.#el.saveStatusLabel);
+        }
+
+        updatePurgeTime(purgeTime) {
+          if (!purgeTime) {
+            this.hideEl(this.#el.footnote);
+            return;
+          }
+
+          this.#el.footnote.querySelector('strong').textContent = purgeTime;
+          this.showEl(this.#el.footnote);
         }
       }
 
@@ -461,6 +670,7 @@
 
         async #enterState(nextState) {
           this.#current = nextState;
+          this.#context.locals = {}; // Reset local state data
           nextState = await this.#handlers[this.#current]?.onEnter?.(this.#context);
           if (nextState && nextState !== this.#current) {
             await this.#transition(nextState);
@@ -481,6 +691,139 @@
           }
         }
       }
+
+      /**
+       * API Class
+       * Handles API interactions and requests.
+       */
+      class API {
+        static purgeTime = 0; // Simulated purge time for testing
+
+        static async fetchEntries(slug) {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve({
+                error: null,
+                purgeTime: ++API.purgeTime,
+                entries: [
+                  {id: 1, content: 'Lorem ipsum dolor sit amet1, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'},
+                  {id: 2, content: 'Lorem ipsum dolor sit amet2, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'},
+                ]
+              });
+            }, 2000);
+          });
+        }
+
+        static async saveEntry(slug, content) {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              const id = Math.floor(Math.random() * 1000); // Simulate a random ID
+              resolve({
+                id,
+                error: null,
+                purgeTime: ++API.purgeTime,
+              });
+            }, 2000);
+          });
+        }
+
+        static async deleteEntry(slug, id) {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve({
+                error: null,
+                purgeTime: ++API.purgeTime,
+              });
+            }, 2000);
+          });
+        }
+
+        static async purgeEntries(slug) {
+          return new Promise(resolve => {
+            setTimeout(() => {
+              resolve({
+                error: null,
+                purgeTime: API.purgeTime = 0,
+              });
+            }, 2000);
+          });
+        }
+      }
+
+      /**
+       * Model Class
+       * Represents the data model for the application.
+       */
+      class Model {
+        static getValidSlug(slug) {
+          return slug.replace(/[^a-z0-9]/gi, '')
+        }
+
+        #slug = null;
+        #entries = [];
+        #metadata = {
+          purgeTime: null,
+        };
+
+        setSlug(slug) {
+          this.#slug = slug;
+        }
+
+        getSlug() {
+          return this.#slug;
+        }
+
+        getEntryCount() {
+          return this.#entries.length;
+        }
+
+        getEntryById(id) {
+          return this.#entries.find(entry => entry.id === id);
+        }
+
+        getPurgeTime() {
+          return this.#metadata.purgeTime;
+        }
+
+        async fetchEntries() {
+          const res = await API.fetchEntries(this.#slug);
+          if (!res.error) {
+            this.#entries = res.entries;
+            this.#metadata.purgeTime = res.purgeTime;
+          }
+          return res;
+        }
+
+        async removeEntryById(id) {
+          const res = await API.deleteEntry(this.#slug, id);
+          if (!res.error) {
+            this.#entries = this.#entries.filter(entry => entry.id !== id);
+            this.#metadata.purgeTime = res.purgeTime;
+          }
+          if (this.#entries.length === 0) {
+            this.#metadata.purgeTime = null; // Reset purge time if no entries left
+          }
+          return res;
+        }
+
+        async saveEntry(content) {
+          const res = await API.saveEntry(this.#slug, content);
+          if (!res.error) {
+            this.#entries.push({id: res.id, content});
+            this.#metadata.purgeTime = res.purgeTime;
+          }
+          return res;
+        }
+
+        async purgeEntries() {
+          const res = await API.purgeEntries(this.#slug);
+          if (!res.error) {
+            this.#entries = [];
+            this.#metadata.purgeTime = null;
+          }
+          return res;
+        }
+      }
       
       /**
        * App Class
@@ -490,69 +833,222 @@
         INIT: Symbol(),
         IDLE: Symbol(),
         SAVING: Symbol(),
+        PURGING: Symbol(),
       };
       
       class App {
         #ui = null;
         #sm = null;
         #ctx = null;
+        #model = null;
 
         constructor() {
           this.#ui = new UI();
+          
           this.#ctx = {
-            ui: this.#ui
+            ui: this.#ui,
           };
 
+          this.resetModel();
+          
           this.#sm = new StateMachine(this.#ctx, STATES.INIT, this);
           this.#ui.addListener(this.#sm.send);
           this.#sm.init();
         }
 
+        resetModel() {
+          this.#model = new Model();
+          this.#ctx.model = this.#model;
+          this.updatePurgeTime();
+        }
+
+        updatePurgeTime() {
+          this.#ctx.ui.updatePurgeTime(this.#ctx.model.getPurgeTime());
+        }
+
+        generateRandomSlug(len = 4) {
+          const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+          const array = new Uint8Array(len);
+          crypto.getRandomValues(array);
+          return Array.from(array, x => chars[x % chars.length]).join('');
+        }
+
+        /**
+         * State: INIT
+         * Initializes the application and transitions to IDLE state.
+         */
         [STATES.INIT] = {
           onEnter: async ctx => {
-            console.log('Initializing app...');
+            console.log('INIT:OnEnter');
+
+            this.resetModel();
+
+            ctx.ui.hideSaveStatus();
+            ctx.ui.setInProgress(true);
+
+            const urlSlug = window.location.pathname.substring(1);
+            const slug = Model.getValidSlug(urlSlug);
+
+            // If provided slug is invalid, redirect to root.
+            if (urlSlug !== slug) {
+              window.location.href = '/';
+              return;
+            }
+
+            // If no slug, transition to IDLE state.
+            if (!slug) {
+              ctx.ui.showEntries(null);
+              return STATES.IDLE;
+            }
+
+            // Otherwise, update the slug and fetch entries.
+            ctx.ui.renderSlug(slug);
+            ctx.model.setSlug(slug);
+
+            const {entries, error} = await ctx.model.fetchEntries();
+
+            if (error) {
+              ctx.ui.showEntryStatus(`Failed to load entries. Try again. (Reason: ${error})`, true);
+            } else {
+              ctx.ui.showEntries(entries);
+            }
+
             return STATES.IDLE;
           },
-        };
 
+          onExit: ctx => {
+            console.log('INIT:OnExit');
+
+            ctx.ui.setInProgress(false);
+            ctx.ui.focusSlugInput();
+          },
+        };
+        
+        /**
+         * State: IDLE
+         * Handles user interactions and manages the idle state.
+         */
         [STATES.IDLE] = {
-          onEnter: (ctx) => {
-            console.log('App is now idle');
+          onEnter: ctx => {
+            console.log('IDLE:OnEnter');
+            this.updatePurgeTime();
           },
           onEvent: {
             [UI.EVENTS.SLUG_INPUT]: (ctx, {slug}) => {
-              console.log('Slug input changed:', slug);
-              // Handle slug input logic
-            },
-            [UI.EVENTS.SAVE]: () => {
-              console.log('Save button clicked');
-              return STATES.SAVING;
-            },
-            [UI.EVENTS.PURGE]: () => {
-              console.log('Purge button clicked');
-              // Handle purge logic
+              console.log('IDLE:OnEvent:SLUG_INPUT', slug);
+              
+              window.history.replaceState({}, '', `/${slug}`);
+              return STATES.INIT; // Reinitialize with new slug
             },
             [UI.EVENTS.ENTRY_COPY]: async (ctx, {id}) => {
-              console.log('Entry copy requested for ID:', id);
-              await navigator.clipboard.writeText(id);
-              console.log('Entry copied to clipboard');
-              // Handle entry copy logic
+              console.log('IDLE:OnEvent:ENTRY_COPY', id);
+
+              const entry = ctx.model.getEntryById(id);
+              await navigator.clipboard.writeText(entry.content);
+              ctx.ui.setCopyButtonSuccess(id);
             },
-            [UI.EVENTS.ENTRY_DELETE]: (ctx, {id}) => {
-              console.log('Entry delete requested for ID:', id);
-              // Handle entry delete logic
-            }
+            [UI.EVENTS.ENTRY_DELETE]: async (ctx, {id}) => {
+              console.log('IDLE:OnEvent:ENTRY_DELETE', id);
+
+              if (confirm(`This action will permanently delete entry #${id}. Continue?`)) {
+                const unsetDeleteButtonInProgress = ctx.ui.setDeleteButtonInProgress(id);
+                const {error} = await ctx.model.removeEntryById(id);
+                
+                if (error) {
+                  unsetDeleteButtonInProgress();
+                  alert(`Failed to delete entry #${id}. (Reason: ${error})`);
+                } else {
+                  ctx.ui.removeEntryItem(id);
+                }
+
+                if (ctx.model.getEntryCount() === 0) {
+                  ctx.ui.hideEntries();
+                }
+
+                this.updatePurgeTime();
+              }
+            },
+            [UI.EVENTS.SAVE]: ctx => {
+              console.log('IDLE:OnEvent:SAVE');
+
+              const content = ctx.ui.getSaveInputValue();
+              if (!content) return;
+
+              return STATES.SAVING;
+            },
+            [UI.EVENTS.PURGE]: ctx => {
+              console.log('IDLE:OnEvent:PURGE');
+              if (confirm('This action will permanently delete all entries in this vault. Continue?')) {
+                return STATES.PURGING;
+              }
+            },
           }
         };
 
+        /**
+         * State: SAVING
+         * Handles the saving logic and transitions back to IDLE state.
+         */
         [STATES.SAVING] = {
           onEnter: async (ctx) => {
-            console.log('Saving entry...');
-            // Simulate saving logic
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Entry saved successfully');
+            console.log('SAVING:OnEnter');
+
+            const unsetSaveButtonInProgress = ctx.ui.setSaveButtonInProgress();
+            ctx.ui.setInProgress(true);
+
+            let slug = ctx.model.getSlug();
+            let random = !slug; // If slug is empty, we will generate a random one
+
+            if (random) {
+              slug = this.generateRandomSlug();
+            }
+
+            const content = ctx.ui.getSaveInputValue();
+            const {id, error} = await ctx.model.saveEntry(content);
+
+            if (!error) {
+              ctx.ui.renderEntryItem({id, content});
+              ctx.ui.clearSaveInput();
+
+              if (random) {
+                ctx.model.setSlug(slug);
+                ctx.ui.renderSlug(slug);
+                window.history.replaceState({}, '', `/${slug}`); // Update URL with new slug
+              }
+            } 
+            
+            ctx.ui.showSaveStatus(error, slug, random);
+            unsetSaveButtonInProgress();
+            ctx.ui.setInProgress(false); 
+
             return STATES.IDLE;
           }
+        };
+
+        /**
+         * State: PURGING
+         * Handles the purging logic and transitions back to IDLE state.
+         */
+        [STATES.PURGING] = {
+          onEnter: async (ctx) => {
+            console.log('PURGING:OnEnter');
+
+            const unsetPurgeButtonInProgress = ctx.ui.setPurgeButtonInProgress();
+            ctx.ui.setInProgress(true);
+
+            const {error} = await ctx.model.purgeEntries();
+
+            if (error) {
+              alert(`Failed to purge entries. (Reason: ${error})`);
+            } else {
+              ctx.ui.showEntries(null);
+            }
+
+            unsetPurgeButtonInProgress();
+            ctx.ui.setInProgress(false);
+
+            return STATES.IDLE;
+          },
         };
       }
 

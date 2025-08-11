@@ -19,6 +19,7 @@ const APP_HANDLERS = {
     assetRoot: 'apps/clip/',
     matcher: url => url.pathname.startsWith('/api'),
     server: appClip,
+    singlePage: true,
   },
   'utils': {
     assetRoot: 'apps/utils/',
@@ -58,10 +59,11 @@ async function serve(req, env, ctx) {
 
   // Otherwise, handle it as a static asset if appHandler has an assetRoot
   if (appHandler.assetRoot) {
-    const assetKey = mapRequestToAsset(req)
-    const assetURL = new URL(assetKey.url)
-    assetURL.pathname = appHandler.assetRoot + assetURL.pathname;
-    
+    const assetHasExtension = url.pathname.match(/\.[a-z0-9]+$/i);
+    const assetURL = new URL(mapRequestToAsset(req).url);
+    const assetPathname = (appHandler.singlePage && !assetHasExtension) ? 'index.html' : assetURL.pathname;
+    assetURL.pathname = appHandler.assetRoot + assetPathname;
+
     let asset = await env.ASSETS.fetch(assetURL.toString());
     let status = asset.status;
     let statusText = asset.statusText;

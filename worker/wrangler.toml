@@ -16,11 +16,15 @@ routes = [
 directory = "./frontend"
 binding = "ASSETS"
 
-[[kv_namespaces]]
-binding = "KV_DATA"
-id = "eca7dea9758d4f2a97ba727c048b53f0"
-
 [vars]
 ENV_JWKS_CACHE_USE = true
 ENV_JWKS_CACHE_KEY = "JWKS_CACHE"
 ENV_JWKS_CACHE_TTL = 604800 # a week: 7 * 24 * 60 * 60
+
+[[kv_namespaces]]
+binding = "KV_DATA"
+id = "eca7dea9758d4f2a97ba727c048b53f0"
+
+[[kv_namespaces]]
+binding = "KV_CLIP"
+id = "1286e18d5328468c8a98e05898efeffe"

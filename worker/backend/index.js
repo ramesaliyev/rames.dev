@@ -17,7 +17,7 @@ const APP_HANDLERS = {
   },
   'clip': {
     assetRoot: 'apps/clip/',
-    matcher: url => url.pathname.startsWith('/api'),
+    matcher: url => url.pathname.startsWith('/api/'),
     server: appClip,
     singlePage: true,
   },
@@ -27,7 +27,7 @@ const APP_HANDLERS = {
   'www': {
     assetRoot: 'apps/www/',
   },
-}
+};
 
 export default {
   async fetch(req, env, ctx) {
@@ -44,7 +44,7 @@ async function serve(req, env, ctx) {
   const hostname = url.hostname;
   
   let appName = hostname.replace(DOMAIN, '').replace('.', '');
-  appName = appName && APP_HANDLERS[appName] ? appName : 'www';
+  appName = appName && APP_HANDLERS[appName] ? appName : 'clip';
   
   // Get the handler for the matched app
   const appHandler = APP_HANDLERS[appName];

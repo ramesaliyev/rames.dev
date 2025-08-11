@@ -295,7 +295,7 @@
             <input id="slugInput" type="text" placeholder="is the access key for this vault..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
           </li>
           <li>
-            <button id="purgeButton" class="danger-button">Purge</button>
+            <button id="purgeButton" class="danger-button" disabled>Purge</button>
           </li>
         </ul>
         <div class="separator"></div>
@@ -312,7 +312,7 @@
           <div id="saveStatusLabel" class="save-status status-box bg-diaglines angle-45 hidden"></div>
         </div>
         <div id="footnote" class="footnote hidden">
-          All vaults are automatically purged 24 hours after their last access. This vault is scheduled for auto-purge at <strong>10.12.2023 23:48</strong>. You can also purge it manually by clicking the "Purge" button above.
+          All vaults are automatically purged 24 hours after last write. This vault is scheduled for auto-purge at <strong>10.12.2023 23:48</strong>. You can also purge it manually by clicking the "Purge" button above.
         </div>
       </main>
     </div>
@@ -349,6 +349,16 @@
             }, delay);
           };
         };
+
+        static timezoned(utcString) {
+          const d = new Date(utcString);
+          const dd = String(d.getDate()).padStart(2, "0");
+          const mm = String(d.getMonth() + 1).padStart(2, "0"); // month is 0-based
+          const yyyy = d.getFullYear();
+          const hh = String(d.getHours()).padStart(2, "0");
+          const min = String(d.getMinutes()).padStart(2, "0");
+          return `${dd}.${mm}.${yyyy} ${hh}:${min}`;
+        }
       }
 
       /**
@@ -535,6 +545,10 @@
           );
         }
 
+        enablePurgeButton(enable) {
+          this.#el.purgeButton.disabled = !enable;
+        }
+
         clearSaveInput() {
           this.#el.saveInput.value = '';
           this.#el.saveInput.style.height = 'auto'; // reset height
@@ -638,7 +652,7 @@
             return;
           }
 
-          this.#el.footnote.querySelector('strong').textContent = purgeTime;
+          this.#el.footnote.querySelector('strong').textContent = Utils.timezoned(purgeTime);
           this.showEl(this.#el.footnote);
         }
       }
@@ -697,56 +711,34 @@
        * Handles API interactions and requests.
        */
       class API {
-        static purgeTime = 0; // Simulated purge time for testing
+        static async fetch(path, method, data) {
+          const res = await fetch(`/api${path}`, {
+            method,
+            headers: {'Content-Type': 'application/json'},
+            body: data ? JSON.stringify(data) : undefined
+          });
+
+          if (!res.ok) {
+            return {error: `API responded with ${res.status}`}
+          }
+
+          return res.json(); // always parse JSON
+        }
 
         static async fetchEntries(slug) {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              resolve({
-                error: null,
-                purgeTime: ++API.purgeTime,
-                entries: [
-                  {id: 1, content: 'Lorem ipsum dolor sit amet1, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'},
-                  {id: 2, content: 'Lorem ipsum dolor sit amet2, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'},
-                ]
-              });
-            }, 2000);
-          });
+          return API.fetch(`/entries/${slug}`, 'GET');
         }
 
         static async saveEntry(slug, content) {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              const id = Math.floor(Math.random() * 1000); // Simulate a random ID
-              resolve({
-                id,
-                error: null,
-                purgeTime: ++API.purgeTime,
-              });
-            }, 2000);
-          });
-        }
-
-        static async deleteEntry(slug, id) {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              resolve({
-                error: null,
-                purgeTime: ++API.purgeTime,
-              });
-            }, 2000);
-          });
+          return API.fetch(`/entries/${slug}`, 'POST', {content});
         }
 
         static async purgeEntries(slug) {
-          return new Promise(resolve => {
-            setTimeout(() => {
-              resolve({
-                error: null,
-                purgeTime: API.purgeTime = 0,
-              });
-            }, 2000);
-          });
+          return API.fetch(`/entries/${slug}`, 'DELETE');
+        }
+
+        static async deleteEntry(slug, id) {
+          return API.fetch(`/entry/${slug}/${id}`, 'DELETE');
         }
       }
 
@@ -774,7 +766,7 @@
         }
 
         getEntryCount() {
-          return this.#entries.length;
+          return this.#entries?.length || 0;
         }
 
         getEntryById(id) {
@@ -787,8 +779,8 @@
 
         async fetchEntries() {
           const res = await API.fetchEntries(this.#slug);
-          if (!res.error) {
-            this.#entries = res.entries;
+          if (res && !res.error) {
+            this.#entries = res.entries || [];
             this.#metadata.purgeTime = res.purgeTime;
           }
           return res;
@@ -863,7 +855,11 @@
         }
 
         updatePurgeTime() {
-          this.#ctx.ui.updatePurgeTime(this.#ctx.model.getPurgeTime());
+          this.#ui.updatePurgeTime(this.#model.getPurgeTime());
+        }
+
+        togglePurgeButton() {
+          this.#ui.enablePurgeButton(this.#model.getSlug() && this.#model.getEntryCount())
         }
 
         generateRandomSlug(len = 4) {
@@ -932,6 +928,7 @@
           onEnter: ctx => {
             console.log('IDLE:OnEnter');
             this.updatePurgeTime();
+            this.togglePurgeButton();
           },
           onEvent: {
             [UI.EVENTS.SLUG_INPUT]: (ctx, {slug}) => {
@@ -966,6 +963,7 @@
                 }
 
                 this.updatePurgeTime();
+                this.togglePurgeButton();
               }
             },
             [UI.EVENTS.SAVE]: ctx => {
@@ -1001,17 +999,19 @@
 
             if (random) {
               slug = this.generateRandomSlug();
+              ctx.model.setSlug(slug);
             }
 
             const content = ctx.ui.getSaveInputValue();
             const {id, error} = await ctx.model.saveEntry(content);
 
-            if (!error) {
+            if (error) {
+              this.resetModel();
+            } else {
               ctx.ui.renderEntryItem({id, content});
               ctx.ui.clearSaveInput();
 
               if (random) {
-                ctx.model.setSlug(slug);
                 ctx.ui.renderSlug(slug);
                 window.history.replaceState({}, '', `/${slug}`); // Update URL with new slug
               }

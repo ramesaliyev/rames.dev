@@ -359,6 +359,15 @@
           const min = String(d.getMinutes()).padStart(2, "0");
           return `${dd}.${mm}.${yyyy} ${hh}:${min}`;
         }
+
+        static escapeHTML(str) {
+          return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+        }
       }
 
       /**
@@ -593,17 +602,18 @@
         }
 
         renderEntryItem(entry) {
+          const content = Utils.escapeHTML(entry.content);
           const entryItem = `
             <li class="entry-item" data-id="${entry.id}">
               <div class="entry-header bg-diaglines">
                 <div class="entry-summary">
                   <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  ${entry.content.substring(0, 100)}
+                  ${content.substring(0, 100)}
                 </div>
                 <div class="entry-id">#${entry.id}</div>
               </div>
               <div class="entry-body">
-                <div class="entry-content">${entry.content}</div>
+                <div class="entry-content">${content}</div>
                 <div class="entry-footer">
                   <button class="delete danger-button">Delete</button>
                   <button class="copy safe-button">Copy</button>

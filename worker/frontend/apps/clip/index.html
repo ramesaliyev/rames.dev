@@ -406,7 +406,6 @@
            * Bind all event listeners to the UI elements.
            */
           this.#el.purgeButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.PURGE));
-          this.#el.saveButton.addEventListener('click', this.#emitEvent.bind(this, UI.EVENTS.SAVE));
 
           const slugInputEmit = Utils.debounce(this.#emitEvent.bind(this), 500);
           this.#el.slugInput.addEventListener('input', () => {
@@ -422,6 +421,15 @@
           this.#el.saveInput.addEventListener('input', function() {
             this.style.height = 'auto'; // reset so shrink works
             this.style.height = this.scrollHeight + 10 + 'px';  
+          });
+
+          const saveEventEmit = Utils.debounce(this.#emitEvent.bind(this), 100);
+          this.#el.saveButton.addEventListener('click', saveEventEmit.bind(this, UI.EVENTS.SAVE));
+          this.#el.saveInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+              event.preventDefault(); // stop newline insertion
+              saveEventEmit(UI.EVENTS.SAVE);
+            }
           });
 
           this.#el.entryList.addEventListener('click', (event) => {
